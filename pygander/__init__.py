@@ -2,4 +2,3 @@
 
 __version__ = '0.1.0'
 __author__ = 'Elias Jaffe <elijaffe173@gmail.com>'
-__all__ = []

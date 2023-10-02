@@ -4,13 +4,19 @@ import pandas as pd
 
 
 def _aggvals(data: Dict[str, Any], query: Union[str, List[str], None], agg: Callable):
-    """
-    Aggregate values from a dictionary based on a query.
+    """Aggregate values selected via the query.
 
-    :param data: A dictionary containing string-key: value pairs.
-    :param query: Query parameter specifying which values to return (str, list of str, or None).
-    :param agg: Aggregation function to join values together.
-    :return: Aggregated value(s) based on the query.
+    Args:
+        data (Dict[str, Any]): Original dictionary of key/value pairs
+        query (Union[str, List[str], None]): A key or list of keys, or none for all
+        agg (Callable): _description_
+
+    Raises:
+        KeyError: Query key is not found in the data.
+        ValueError: Inappropriate query datatype
+
+    Returns:
+        agg of queried values
     """
     if query is None:
         return agg(data.values())
@@ -54,12 +60,14 @@ class Grouper:
         self.dataframes = dataframes
 
     def sel(self, cg: Union[str, List[str], None] = None, df: Union[str, List[str], None] = None) -> pd.DataFrame:
-        """
-        Select columns of a specific type from the data.
+        """Select a group of columns or dataframes
 
-            :param column_type: The type of columns to select, string.
-            :param data_split: The data split to operate on ("train", "test", or "all").
-            :return: A DataFrame containing the selected columns.
+        Args:
+            cg (Union[str, List[str], None], optional): List of column groups, a single column group, or None for all columns. Defaults to None.
+            df (Union[str, List[str], None], optional): List of dataframes, a dataframe key, or None for all. Defaults to None.
+
+        Returns:
+            pd.DataFrame: Selected dataframes.
         """
         sel_cols = _aggvals(self.column_groups, cg, _agg_str_list)
         sel_dfs = _aggvals(self.dataframes, df, pd.concat)
