@@ -132,6 +132,19 @@ The following pygander script is equivalent.
 
 Both scripts are equally verbose, but as the number of column references increases, ``ctransf`` becomes a more efficient means of creating column transforms. In addition to reducing at least 5-6 characters per column reference (``df['`` and ``']``), the decorator-and-function syntax is also easier to read.
 
+If your dataframe has column names that aren't "identifiers" and can't be listed as function parameters (leading digits, spaces, symbols, etc.), ``pygander`` offers ``pg.norm_colnames`` a convenient and robust in-place column renaming function.
+
+.. code-block:: python
+
+    >>> df.columns
+    Index['  0123 aBC', ' /// e', 'Normal Name']
+    >>> pg.norm_colnames(df)
+    >>> df.columns
+    Index['_0123_abc', '_e', 'normal_name']
+    >>> pg.rowlogic(df)
+    ... def new_col(_0123_abc, _e, normal_name):
+    ...    ... # now you can use the column names as identifiers
+
 Installation
 ------------
 
