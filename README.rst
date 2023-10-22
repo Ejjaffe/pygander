@@ -130,7 +130,7 @@ The following pygander script is equivalent.
     def z_score_of_a(a):
         return (a - a.mean()) / a.std()
 
-Both scripts are equally verbose, but as the number of column references increases, ``ctransf`` becomes a more efficient means of creating column transforms. In addition to reducing at least 5 characters per column reference (`d['` and `']`), the decorator-and-function syntax is also easier to read.
+Both scripts are equally verbose, but as the number of column references increases, ``ctransf`` becomes a more efficient means of creating column transforms. In addition to reducing at least 5-6 characters per column reference (``df['`` and ``']``), the decorator-and-function syntax is also easier to read.
 
 Installation
 ------------
