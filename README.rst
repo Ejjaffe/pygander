@@ -17,9 +17,10 @@ Usage
 Grouper
 ^^^^^^^
 
+The Grouper class contains
+
 .. code-block:: python
 
-    :caption: Constructing demo datasets
       k = 100
     df = pd.DataFrame()
     df['rowid'] = list(range(k))
@@ -40,7 +41,6 @@ Grouper
 
 .. code-block:: python
 
-    :caption: Instantiating Grouper class
     dfg = Grouper(
         column_groups,
         train=train,
@@ -91,6 +91,8 @@ Using ``pygander``, we can cut the number of characters required to write this o
 
 .. code-block:: python
 
+    import pygander as pg
+
     @pg.rowlogic(df, default_if_exception=pd.NA)
     def with_rowlogic(a: int, b: int, c: int = 7):
         if a < b:
@@ -102,7 +104,33 @@ Using ``pygander``, we can cut the number of characters required to write this o
         
         return str(c)
 
-    
+The ``ctransf`` decorator also allows for column-wise transformations. Take for example the following pandas script.
+
+.. code-block:: python
+
+    import pandas as pd
+
+    df = pd.DataFrame(...)
+
+    # make a z_score_of_a column in df
+    df['z_score_of_a'] = (df['a'] - df['a'].mean()) / (df['a'].std())
+
+The following pygander script is equivalent.
+
+.. code-block:: python
+
+    import pygander as pg
+    import pandas as pd
+
+
+    df = pd.DataFrame(...)
+
+    # make a z_score_of_a column in df using pygander
+    @pg.ctransf(df)
+    def z_score_of_a(a):
+        return (a - a.mean()) / a.std()
+
+Both scripts are equally verbose, but as the number of column references increases, ``ctransf`` becomes a more efficient means of creating column transforms. In addition to reducing at least 5 characters per column reference (`d['` and `']`), the decorator-and-function syntax is also easier to read.
 
 Installation
 ------------
