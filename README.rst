@@ -169,6 +169,13 @@ And during competition inference, you'll want the row IDs and the feature data f
 
     dfg.sel(cg=['rowid', 'x'], df='test')
 
+If you want to see everything, you can call an empty ``dfg.sel``.
+
+.. code-block:: python
+
+    dfg.sel()
+
+
 
 Installation
 ------------
