@@ -14,40 +14,6 @@ Kaggle Data Utilities
 Usage
 -----
 
-Grouper
-^^^^^^^
-
-The Grouper class contains
-
-.. code-block:: python
-
-      k = 100
-    df = pd.DataFrame()
-    df['rowid'] = list(range(k))
-    df['a'] = choices([1, 2, 3], k=k)
-    df['b'] = choices(['e','ee','eee'], k=k)
-    df['c'] = choices([1, 2, 3, 4, 5, 6], k=k)
-    df['target'] = choices([0, 1], k=k)
-    
-    column_groups = {
-        'rowid': ['rowid'],
-        'x': ['a', 'b', 'c'],
-        'y': ['target'],
-    }
-    
-    train=df.head(k//4)
-    val = df.head(k//2).tail(k//4)
-    test=df.tail(k//2).drop('target', axis=1)
-
-.. code-block:: python
-
-    dfg = Grouper(
-        column_groups,
-        train=train,
-        test=test,
-        val=val
-    )
-
 Transforms
 ^^^^^^^^^^
 PyGander contains advanced function decorators which allow you to create or replace columns in dataframes using a fun and efficient function-based syntax. 
@@ -144,6 +110,65 @@ If your dataframe has column names that aren't "identifiers" and can't be listed
     >>> pg.rowlogic(df)
     ... def new_col(_0123_abc, _e, normal_name):
     ...    ... # now you can use the column names as identifiers
+
+Grouper
+^^^^^^^
+
+The Grouper class provides a convenient means of selecting certain dataframe splits or column sets. Take the following dataframes:
+
+.. code-block:: python
+
+    k = 100
+    df = pd.DataFrame()
+    df['rowid'] = list(range(k))
+    df['a'] = choices([1, 2, 3], k=k)
+    df['b'] = choices(['e','ee','eee'], k=k)
+    df['c'] = choices([1, 2, 3, 4, 5, 6], k=k)
+    df['target'] = choices([0, 1], k=k)
+    
+    train=df.head(k//4)
+    val = df.head(k//2).tail(k//4)
+    test=df.tail(k//2).drop('target', axis=1)
+
+To create a grouper, identify sets of columns and which dataframes you're interested in.
+
+.. code-block:: python
+
+    dfg = pg.Grouper(
+         column_groups = {
+            'rowid': ['rowid'],
+            'x': ['a', 'b', 'c'],
+            'y': ['target'],
+        },
+        train=train,
+        test=test,
+        val=val
+    )
+
+You can then call ``dfg.sel`` to select and combine certain dataframes and column sets. For example, common phases of the kaggle process include data preparation, where you'll want all feature columns for all splits, without row IDs or target data.
+
+.. code-block:: python
+
+    dfg.sel(cg='x')
+
+During training, you'll want feature data and target data for the training set.
+
+.. code-block:: python
+
+    dfg.sel(cg=['x', 'y'], df='train')
+
+During validation, you'll want feature data and target data for the validation set.
+
+.. code-block:: python
+
+    dfg.sel(cg=['x', 'y'], df='val')
+
+And during competition inference, you'll want the row IDs and the feature data for the test set.
+
+.. code-block:: python
+
+    dfg.sel(cg=['rowid', 'x'], df='test')
+
 
 Installation
 ------------
