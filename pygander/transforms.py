@@ -3,6 +3,7 @@
 import pandas as pd
 import inspect
 import re
+from collections import defaultdict
 from typing import Callable, Union, Literal, Any
 
 
