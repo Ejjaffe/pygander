@@ -2,6 +2,7 @@
 
 import pandas as pd
 import inspect
+import re
 from typing import Callable, Union, Literal, Any
 
 
@@ -274,3 +275,43 @@ def ctransf(df: pd.DataFrame, overwrite_col: bool = True,):
         df[func.__name__] = func(**{cname:df[cname] for cname in parameters})
 
     return decorator
+
+def _normalize_column_name(s:str):
+    # replace necessary whitespace with _
+    s = re.sub(r'[\s]', '_', s.strip())
+    # remove any remaining non-identifier chars
+    s = re.sub(r'[^0-9a-zA-Z_]', '', s)
+    # make leading digits start with an underscore
+    s = re.sub(r'^(\d)', r'_\1', s)
+    return s.strip().lower()
+
+def norm_colnames(df:pd.DataFrame):
+    """
+    Normalize column names of a Pandas DataFrame in-place.
+
+    This function makes column names suitable as variable names and ensures
+    that duplicates have suffixes to make them unique. 
+    
+    The string conversion first replaces all 
+    whitespace with underscores. Then it removes non-alphanumeric and 
+    non-underscore characters and ensures the name starts with a non-digit 
+    character by prepending an underscore if needed.
+
+    `'  0123 aBc '` -> `'_0123_abc'`
+
+    Parameters:
+    -----------
+        df (pd.DataFrame): The Pandas DataFrame with columns to be normalized.
+    """
+    normalized_columns = df.columns.map(_normalize_column_name)
+    seen = defaultdict(int)
+    
+    new_columns = []
+    for col in normalized_columns:
+        if seen[col] == 0:
+            new_columns.append(col)
+        else:
+            new_columns.append(f"{col}_{seen[col]}")
+        seen[col] += 1
+
+    df.columns = new_columns
